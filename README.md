@@ -1,6 +1,6 @@
 # Glasp Highlights Auto Export -- n8n Workflow
 
-Automatically fetch your new [Glasp](https://glasp.co) highlights and export them to any destination -- Notion, Slack, Google Sheets, Obsidian, or any API.
+Automatically fetch your new [Glasp](https://glasp.co) highlights and export them to any destination -- Notion, Slack, Google Sheets, or any API.
 
 ## How It Works
 
@@ -94,12 +94,6 @@ Map columns: `title`, `url`, `domain`, `highlightCount`, `highlightsText`, `crea
 ### Webhook / Custom API
 
 Add an **HTTP Request** node --> POST `{{ $json }}` as JSON body.
-
-### Obsidian (via Local REST API plugin)
-
-Add an **HTTP Request** node --> PUT to:
-`http://localhost:27124/vault/Glasp/{{ $json.title }}.md`
-Body: `{{ $json.highlightsMarkdown }}`
 
 ## Configuration
 
