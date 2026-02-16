@@ -1,59 +1,52 @@
-# Glasp Highlights Auto Export — n8n Workflow
+# Glasp Highlights Auto Export -- n8n Workflow
 
-Automatically fetch your new [Glasp](https://glasp.co) highlights and export them to any destination — Notion, Slack, Google Sheets, Obsidian, or any API.
+Automatically fetch your new [Glasp](https://glasp.co) highlights and export them to any destination -- Notion, Slack, Google Sheets, Obsidian, or any API.
 
 ## How It Works
 
 ```
-Schedule Trigger → Fetch & Filter Highlights → Has Highlights? → Format for Export → [Your Destination]
+Schedule Trigger --> Prepare Parameters --> Glasp API --> Filter & Format --> [Your Destination]
 ```
 
 | Node | What it does |
 |------|-------------|
 | **Schedule Trigger** | Runs every 6 hours (configurable) |
-| **Fetch & Filter Highlights** | Calls Glasp API with pagination, returns only new (unexported) documents |
-| **Has Highlights?** | Filters out documents with no highlights |
-| **Format for Export** | Outputs clean structure with plain text + Markdown formats |
-| **[Your Destination]** | Connect any n8n node — Notion, Slack, Sheets, etc. |
+| **Prepare Parameters** | Calculates time range and tracks exported docs |
+| **Glasp API** | HTTP Request node with Bearer Auth + pagination |
+| **Filter & Format** | Returns only new docs, outputs plain text + Markdown |
+| **[Your Destination]** | Connect any n8n node -- Notion, Slack, Sheets, etc. |
 
 ## Setup
 
-### Step 1: Get your Glasp Access Token
-
-Go to **[glasp.co/settings/access_token](https://glasp.co/settings/access_token)** and copy your token.
-
-### Step 2: Set your token
-
-Open the **"Fetch & Filter Highlights"** Code node and replace `YOUR_GLASP_ACCESS_TOKEN` with your actual token:
-
-```javascript
-// Option A: Direct token (n8n Cloud users)
-const token = 'paste-your-token-here';
-```
-
-**For self-hosted n8n users:** You can use an environment variable instead:
-
-```javascript
-// Option B: Environment variable (self-hosted)
-const token = $env.GLASP_ACCESS_TOKEN;
-```
-
-> ⚠️ **Security:** If you fork this repo, never commit your actual token. The workflow JSON uses a placeholder `YOUR_GLASP_ACCESS_TOKEN` by default.
-
-### Step 3: Import the workflow
+### Step 1: Import the workflow
 
 | Method | How |
 |--------|-----|
-| **From file** | Download `glasp-highlights-export-workflow.json` → n8n → **⋯** → **Import from File** |
-| **From URL** | n8n → **⋯** → **Import from URL** → paste the raw GitHub URL |
+| **From file** | Download `glasp-highlights-export-workflow.json` then in n8n: **...** menu --> **Import from File** |
+| **From URL** | In n8n: **...** menu --> **Import from URL** --> paste the raw GitHub URL |
+
+### Step 2: Get your Glasp Access Token
+
+Go to **[glasp.co/settings/access_token](https://glasp.co/settings/access_token)** and copy your token.
+
+### Step 3: Create a credential in n8n
+
+1. Open the **Glasp API** node
+2. In **Authentication**, select **Predefined Credential Type**
+3. Credential Type: **Bearer Auth**
+4. Click **Create New Credential**
+5. Paste your Glasp token as the **Token** value
+6. Save
+
+> **Security:** The token is stored in n8n's encrypted credential store, never in the workflow JSON. Safe to share and commit to Git.
 
 ### Step 4: Connect your destination
 
-Add a node after **"Format for Export"** to send highlights wherever you want. See examples below.
+Add a node after **"Filter & Format"** to send highlights wherever you want. See examples below.
 
 ## Output Fields
 
-Each item output by "Format for Export":
+Each item output by "Filter & Format":
 
 | Field | Type | Description |
 |-------|------|-------------|
@@ -76,17 +69,17 @@ Each item output by "Format for Export":
 
 ### Notion
 
-Add a **Notion** node → **Create Database Item**:
-- Title → `{{ $json.title }}`
-- URL → `{{ $json.url }}`
-- Content → `{{ $json.highlightsMarkdown }}`
-- Tags → `{{ $json.tags }}`
+Add a **Notion** node --> **Create Database Item**:
+- Title: `{{ $json.title }}`
+- URL: `{{ $json.url }}`
+- Content: `{{ $json.highlightsMarkdown }}`
+- Tags: `{{ $json.tags }}`
 
 ### Slack
 
-Add a **Slack** node → **Send Message**:
+Add a **Slack** node --> **Send Message**:
 ```
-📚 *{{ $json.title }}*
+*{{ $json.title }}*
 {{ $json.url }}
 {{ $json.highlightCount }} highlights
 
@@ -95,16 +88,16 @@ Add a **Slack** node → **Send Message**:
 
 ### Google Sheets
 
-Add a **Google Sheets** node → **Append Row**:
+Add a **Google Sheets** node --> **Append Row**:
 Map columns: `title`, `url`, `domain`, `highlightCount`, `highlightsText`, `createdAt`
 
 ### Webhook / Custom API
 
-Add an **HTTP Request** node → POST `{{ $json }}` as JSON body.
+Add an **HTTP Request** node --> POST `{{ $json }}` as JSON body.
 
 ### Obsidian (via Local REST API plugin)
 
-Add an **HTTP Request** node → PUT to:
+Add an **HTTP Request** node --> PUT to:
 `http://localhost:27124/vault/Glasp/{{ $json.title }}.md`
 Body: `{{ $json.highlightsMarkdown }}`
 
@@ -113,9 +106,15 @@ Body: `{{ $json.highlightsMarkdown }}`
 | Setting | Default | How to change |
 |---------|---------|---------------|
 | Schedule | Every 6 hours | Click Schedule Trigger node |
-| First run lookback | 24 hours | Edit `24 * 60 * 60 * 1000` in Code node |
-| Tracking cleanup | 30 days | Edit `30 * 24 * 60 * 60 * 1000` in Code node |
-| Buffer time | 5 minutes | Edit `5 * 60 * 1000` in Code node |
+| First run lookback | 24 hours | Edit `24 * 60 * 60 * 1000` in Prepare Parameters |
+| Tracking cleanup | 30 days | Edit `30 * 24 * 60 * 60 * 1000` in Filter & Format |
+| Buffer time | 5 minutes | Edit `5 * 60 * 1000` in Prepare Parameters |
+
+## How Deduplication Works
+
+The workflow tracks exported document IDs in n8n's static data storage. Each document is only exported once. Tracking entries older than 30 days are automatically cleaned up to prevent unbounded growth.
+
+On the first run, the workflow looks back 24 hours. Subsequent runs only fetch highlights updated since the last run, with a 5-minute overlap buffer to avoid missing any.
 
 ## Glasp API
 
@@ -124,6 +123,11 @@ Body: `{{ $json.highlightsMarkdown }}`
 - **Pagination:** cursor-based (`nextPageCursor` / `pageCursor`)
 - **Rate limit:** 50 requests/minute
 - **Docs:** [glasp.co/docs/api](https://glasp.co/docs/api)
+
+## Requirements
+
+- n8n (Cloud or self-hosted)
+- Glasp account with access token
 
 ## License
 
