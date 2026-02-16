@@ -94,7 +94,7 @@
     },
     {
       "parameters": {
-        "content": "## ðŸ”Œ Connect Your Destination Here\n\nAdd your preferred export node after \"Filter & Format\".\n\n**Available fields per item:**\n- `title` â€” Article/page title\n- `url` â€” Original URL\n- `glasp_url` â€” Glasp page URL\n- `domain`, `category`, `tags`\n- `highlightCount`\n- `highlightsText` â€” Plain text\n- `highlightsMarkdown` â€” Markdown\n- `highlights[]` â€” Array of objects\n- `createdAt`, `updatedAt`\n\n**Examples:**\n- Notion â†’ Create Database Item\n- Slack â†’ Send Message\n- Google Sheets â†’ Append Row\n- Email â†’ Send Email\n- Webhook â†’ HTTP Request POST",
+        "content": "## [Connect Your Destination Here]\n\nAdd your preferred export node after \"Filter & Format\".\n\n**Available fields per item:**\n- `title` -- Article/page title\n- `url` -- Original URL\n- `glasp_url` -- Glasp page URL\n- `domain`, `category`, `tags`\n- `highlightCount`\n- `highlightsText` -- Plain text\n- `highlightsMarkdown` -- Markdown\n- `highlights[]` -- Array of objects\n- `createdAt`, `updatedAt`\n\n**Examples:**\n- Notion: Create Database Item\n- Slack: Send Message\n- Google Sheets: Append Row\n- Email: Send Email\n- Webhook: HTTP Request POST",
         "height": 440,
         "width": 360
       },
@@ -109,7 +109,7 @@
     },
     {
       "parameters": {
-        "content": "## âš™ï¸ Setup (2 steps)\n\n**Step 1:** Get your Glasp Access Token\nhttps://glasp.co/settings/access_token\n\n**Step 2:** Create a \"Header Auth\" credential\nâ†’ Name: `Authorization`\nâ†’ Value: `Bearer YOUR_TOKEN`\nThen assign it to the \"Glasp API\" node.\n\n**Optional:** Adjust schedule frequency\nby clicking the Schedule Trigger node.\nDefault: every 6 hours.",
+        "content": "## [Setup - 2 steps]\n\n**Step 1:** Get your Glasp Access Token\nhttps://glasp.co/settings/access_token\n\n**Step 2:** Create a \"Header Auth\" credential\n- Name: Authorization\n- Value: Bearer YOUR_TOKEN\nThen assign it to the \"Glasp API\" node.\n\n**Optional:** Adjust schedule frequency\nby clicking the Schedule Trigger node.\nDefault: every 6 hours.",
         "height": 320,
         "width": 360
       },
@@ -124,7 +124,7 @@
     },
     {
       "parameters": {
-        "content": "## ðŸ›¡ï¸ Security\n\n- Access token is stored in n8n's\n  encrypted Credentials, never in\n  the workflow JSON.\n- Exported doc tracking auto-cleans\n  after 30 days.\n- No secrets in code.",
+        "content": "## [Security]\n\n- Access token is stored in n8n's\n  encrypted Credentials, never in\n  the workflow JSON.\n- Exported doc tracking auto-cleans\n  after 30 days.\n- No secrets in code.",
         "height": 220,
         "width": 360
       },
