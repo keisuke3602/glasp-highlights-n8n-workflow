@@ -118,6 +118,11 @@ On the first run, the workflow looks back 24 hours. Subsequent runs only fetch h
 - **Rate limit:** 50 requests/minute
 - **Docs:** [glasp.co/docs/api](https://glasp.co/docs/api)
 
+## Tutorial
+
+For a step-by-step guide with screenshots, see the full tutorial:
+[How to Auto-Export Glasp Highlights with n8n](https://glasp.co/posts/how-to-autoexport-glasp-highlights-with-n8n)
+
 ## Requirements
 
 - n8n (Cloud or self-hosted)
